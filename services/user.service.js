@@ -48,4 +48,8 @@ async function createUser(userData) {
   return rows;
 }
 
-module.exports = { checkIfUserExists, checkIfUserNameExists, createUser };
+module.exports = {
+  checkIfUserExists,
+  checkIfUserNameExists,
+  createUser,
+};
