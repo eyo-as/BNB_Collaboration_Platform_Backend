@@ -6,6 +6,8 @@ const router = express.Router();
 const userController = require("../controllers/user.controller");
 // create a route to handle the register request on post
 router.post("/api/register", userController.createUser);
+// create a route to handle the login request on post
+router.post("/api/login", userController.login);
 
 // export the router
 module.exports = router;

@@ -35,7 +35,26 @@ async function createUser(userData) {
   return rows;
 }
 
+// a function to login a user
+async function login(email, password) {
+  const query = "SELECT * FROM users WHERE email = ?";
+  const [rows] = await pool.execute(query, [email]);
+  if (rows.length === 0) {
+    return false;
+  }
+
+  const user = rows[0];
+  const isValidPassword = await bcrypt.compare(password, user.password);
+  if (!isValidPassword) {
+    return false;
+  }
+
+  return user;
+}
+
+// export the functions
 module.exports = {
   checkIfUserExists,
   createUser,
+  login,
 };
