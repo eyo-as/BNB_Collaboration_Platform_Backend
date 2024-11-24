@@ -18,15 +18,19 @@ async function createUser(req, res) {
     ) {
       return res.status(400).json({ error: "All fields are required" });
     }
-    // check if the user already exists in the database by it's email
-    const userExists = await userService.checkIfUserExists(req.body.email);
+    // check if the user already exists in the database
+    const userExists = await userService.checkIfUserExists(
+      "email",
+      req.body.email
+    );
     if (userExists) {
       return res
         .status(400)
         .json({ error: "User with this email already exists" });
     }
-    // check if the user already exists in the database by it's user name
-    const userNameExists = await userService.checkIfUserNameExists(
+
+    const userNameExists = await userService.checkIfUserExists(
+      "username",
       req.body.username
     );
     if (userNameExists) {

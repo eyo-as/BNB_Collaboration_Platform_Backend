@@ -4,23 +4,10 @@ const pool = require("../config/db.config");
 const bcrypt = require("bcrypt");
 
 // a function to check if a user exists in the database
-async function checkIfUserExists(email) {
-  const query = "SELECT * FROM users WHERE email = ?";
-  const [rows] = await pool.execute(query, [email]);
-  if (rows.length > 0) {
-    return true;
-  }
-  return false;
-}
-
-// a function to check if a user exists in the database
-async function checkIfUserNameExists(username) {
-  const query = "SELECT * FROM users WHERE username = ?";
-  const [rows] = await pool.execute(query, [username]);
-  if (rows.length > 0) {
-    return true;
-  }
-  return false;
+async function checkIfUserExists(field, value) {
+  const query = `SELECT * FROM users WHERE ${field} = ?`;
+  const [rows] = await pool.execute(query, [value]);
+  return rows.length > 0;
 }
 
 // a function to create a user in the database
@@ -50,6 +37,5 @@ async function createUser(userData) {
 
 module.exports = {
   checkIfUserExists,
-  checkIfUserNameExists,
   createUser,
 };
