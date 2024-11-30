@@ -93,5 +93,48 @@ async function login(req, res) {
   }
 }
 
+// a function to get all users from the database
+async function getAllUsers(req, res) {
+  try {
+    const users = await userService.getAllUsers();
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+// a function to get a single user from the database
+async function getUserById(req, res) {
+  try {
+    const user = await userService.getUserById(req.params.id);
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+// a function to update a user in the database
+async function updateUser(req, res) {
+  try {
+    const user = await userService.updateUser(req.params.id, req.body);
+    return res.status(200).json({
+      message: "User updated successfully",
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 // export the functions
-module.exports = { createUser, login };
+module.exports = {
+  createUser,
+  login,
+  getAllUsers,
+  getUserById,
+  updateUser,
+};

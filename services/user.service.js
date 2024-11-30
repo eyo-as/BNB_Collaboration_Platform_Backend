@@ -52,9 +52,51 @@ async function login(email, password) {
   return user;
 }
 
+// a function to get all users
+async function getAllUsers() {
+  const query = "SELECT * FROM users";
+  const [rows] = await pool.execute(query);
+  return rows;
+}
+
+// a function to get single user
+async function getUserById(id) {
+  const query = "SELECT * FROM users WHERE user_id = ?";
+  const [rows] = await pool.execute(query, [id]);
+  return rows[0];
+}
+
+// a function to update a user from the database
+async function updateUser(id, userData) {
+  const { username, first_name, last_name, role, class_id, password } =
+    userData;
+
+  // hash the password
+  const hasedPassword = await bcrypt.hash(password, 10);
+
+  const query =
+    "UPDATE users SET username = ?, first_name = ?, last_name = ?, role = ?, class_id = ?, password = ? WHERE user_id = ?";
+
+  const values = [
+    username,
+    first_name,
+    last_name,
+    role,
+    class_id,
+    hasedPassword,
+    id,
+  ];
+
+  const [rows] = await pool.execute(query, values);
+  return rows;
+}
+
 // export the functions
 module.exports = {
   checkIfUserExists,
   createUser,
   login,
+  getAllUsers,
+  getUserById,
+  updateUser,
 };
