@@ -16,9 +16,24 @@ router.get(
   authorizeRole("admin"),
   userController.getAllUsers
 );
-router.get("/api/user/:id", userController.getUserById);
-router.put("/api/user/:id", userController.updateUser);
-// router.delete("/api/user/:id", userController.deleteUser);
+router.get(
+  "/api/user/:id",
+  verifyToken,
+  authorizeRole("admin"),
+  userController.getUserById
+);
+router.put(
+  "/api/user/:id",
+  verifyToken,
+  authorizeRole("student"),
+  userController.updateUser
+);
+// router.delete(
+//   "/api/user/:id",
+//   verifyToken,
+//   authorizeRole("admin"),
+//   userController.deleteUser
+// );
 
 // Export the router
 module.exports = router;

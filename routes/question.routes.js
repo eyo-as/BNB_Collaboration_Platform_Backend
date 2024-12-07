@@ -5,13 +5,28 @@ const router = express.Router();
 // import the question controller
 const questionController = require("../controllers/question.controller");
 // import verifyToken middleware
-const { verifyToken } = require("../middlewares/authMiddleware");
+const { verifyToken, authorizeRole } = require("../middlewares/authMiddleware");
 
 // Define routes
-router.post("/api/questions", verifyToken, questionController.createQuestion);
-// router.get("/api/questions", questionController.getAllQuestions);
-// router.get("/api/questions/:id", questionController.getQuestionById);
-// router.put("/api/questions/:id", questionController.updateQuestion);
+router.post("/api/question", verifyToken, questionController.createQuestion);
+router.get(
+  "/api/questions",
+  verifyToken,
+  authorizeRole("admin"),
+  questionController.getAllQuestions
+);
+router.get(
+  "/api/questions/:id",
+  verifyToken,
+  authorizeRole("admin"),
+  questionController.getQuestionById
+);
+router.put(
+  "/api/questions/:id",
+  verifyToken,
+  authorizeRole("admin"),
+  questionController.updateQuestion
+);
 // router.delete("/api/questions/:id", questionController.deleteQuestion);
 
 // export the router
