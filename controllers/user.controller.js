@@ -6,50 +6,60 @@ const jwt = require("jsonwebtoken");
 // a function to create a new user in the database
 async function createUser(req, res) {
   try {
-    // validate the inputs
     const { username, first_name, last_name, role, class_id, email, password } =
       req.body;
 
+    // Validate required fields
     if (
       !username ||
       !first_name ||
       !last_name ||
       !role ||
-      !class_id ||
       !email ||
       !password
     ) {
-      return res.status(400).json({ error: "All fields are required" });
+      return res
+        .status(400)
+        .json({ error: "All required fields must be filled." });
     }
-    // check if the user already exists in the database
-    const userExists = await userService.checkIfUserExists(
-      "email",
-      req.body.email
-    );
+
+    // Ensure `class_id` is provided only for students
+    if (role === "student" && !class_id) {
+      return res
+        .status(400)
+        .json({ error: "Class ID is required for students." });
+    } else if ((role === "admin" || role === "teacher") && class_id) {
+      return res.status(400).json({
+        error: "Class ID should not be provided for admin or teacher.",
+      });
+    }
+
+    // Check if the user already exists in the database
+    const userExists = await userService.checkIfUserExists("email", email);
     if (userExists) {
       return res
         .status(400)
-        .json({ error: "User with this email already exists" });
+        .json({ error: "User with this email already exists." });
     }
 
-    const userNameExists = await userService.checkIfUserExists(
+    const usernameExists = await userService.checkIfUserExists(
       "username",
-      req.body.username
+      username
     );
-    if (userNameExists) {
+    if (usernameExists) {
       return res
         .status(400)
-        .json({ error: "User with this username already exists" });
+        .json({ error: "User with this username already exists." });
     }
 
-    // check if the password is less than 8 characters
+    // Check password length
     if (password.length < 8) {
       return res
         .status(400)
-        .json({ error: "Password must be at least 8 characters" });
+        .json({ error: "Password must be at least 8 characters." });
     }
 
-    // create the user
+    // Create the user
     await userService.createUser(req.body);
     return res.status(201).json({
       message: "User created successfully",
@@ -66,7 +76,7 @@ async function login(req, res) {
   try {
     // validate the inputs
     const { email, password } = req.body;
-
+    // validate inputs
     if (!email || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -77,15 +87,20 @@ async function login(req, res) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // // create a token
-    // const token = jwt.sign({ user }, process.env.JWT_SECRET, {
-    //   expiresIn: process.env.JWT_EXPIRATION,
-    // });
+    // create a token
+    const token = jwt.sign(
+      { user_id: user.user_id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRATION,
+      }
+    );
 
+    // Respond with the generated token and user info
     return res.status(200).json({
       message: "Login successful",
       success: true,
-      // token,
+      token,
     });
   } catch (error) {
     console.error(error.message);

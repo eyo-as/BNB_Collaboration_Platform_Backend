@@ -15,22 +15,33 @@ async function createUser(userData) {
   const { username, first_name, last_name, role, class_id, email, password } =
     userData;
 
-  // hash the password
-  const hasedPassword = await bcrypt.hash(password, 10);
+  // Validate fields at the service level as well
+  if (!username || !first_name || !last_name || !role || !email || !password) {
+    throw new Error("All fields except class_id are required.");
+  }
 
+  // Determine class_id based on role
+  const resolvedClassId = role === "student" ? class_id : null;
+
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // SQL query
   const query =
-    "INSERT INTO users (username, first_name, last_name, role, class_id, email, password) VALUES (?,?,?,?,?,?,?)";
+    "INSERT INTO users (username, first_name, last_name, role, class_id, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
+  // Values for the query
   const values = [
     username,
     first_name,
     last_name,
     role,
-    class_id,
+    resolvedClassId, // Ensure correct class_id
     email,
-    hasedPassword,
+    hashedPassword,
   ];
 
+  // Execute the query
   const [rows] = await pool.execute(query, values);
   return rows;
 }
