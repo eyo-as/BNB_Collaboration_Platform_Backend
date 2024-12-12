@@ -78,7 +78,7 @@ async function getUserById(id) {
 }
 
 // a function to update a user from the database
-async function updateUser(id, userData) {
+async function updateUser(user_id, userData) {
   const { username, first_name, last_name, role, class_id, password } =
     userData;
 
@@ -95,10 +95,17 @@ async function updateUser(id, userData) {
     role,
     class_id,
     hasedPassword,
-    id,
+    user_id,
   ];
 
   const [rows] = await pool.execute(query, values);
+  return rows;
+}
+
+// a function to delete a user from the database
+async function deleteUser(user_id) {
+  const query = "DELETE FROM users WHERE user_id = ?";
+  const [rows] = await pool.execute(query, [user_id]);
   return rows;
 }
 
@@ -110,4 +117,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   updateUser,
+  deleteUser,
 };

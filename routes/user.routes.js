@@ -7,7 +7,7 @@ const userController = require("../controllers/user.controller");
 // Import middleware
 const { verifyToken, authorizeRole } = require("../middlewares/authMiddleware");
 
-// Define routes
+// Define routes for user management
 router.post("/api/register", userController.createUser);
 router.post("/api/login", userController.login);
 router.get(
@@ -28,12 +28,12 @@ router.put(
   authorizeRole("student"),
   userController.updateUser
 );
-// router.delete(
-//   "/api/user/:id",
-//   verifyToken,
-//   authorizeRole("admin"),
-//   userController.deleteUser
-// );
+router.delete(
+  "/api/user/:id",
+  verifyToken,
+  authorizeRole("admin"),
+  userController.deleteUser
+);
 
 // Export the router
 module.exports = router;

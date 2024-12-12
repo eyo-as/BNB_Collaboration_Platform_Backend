@@ -1,6 +1,6 @@
-// import the user service
+const express = require("express");
+const router = express.Router();
 const userService = require("../services/user.service");
-// import the jsonwebtoken module
 const jwt = require("jsonwebtoken");
 
 // a function to create a new user in the database
@@ -118,7 +118,11 @@ async function login(req, res) {
 async function getAllUsers(req, res) {
   try {
     const users = await userService.getAllUsers();
-    return res.status(200).json(users);
+    return res.status(200).json({
+      message: "Users retrieved successfully",
+      success: true,
+      data: users,
+    });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -129,7 +133,11 @@ async function getAllUsers(req, res) {
 async function getUserById(req, res) {
   try {
     const user = await userService.getUserById(req.params.id);
-    return res.status(200).json(user);
+    return res.status(200).json({
+      message: "User retrieved successfully",
+      success: true,
+      data: user,
+    });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -139,9 +147,24 @@ async function getUserById(req, res) {
 // a function to update a user in the database
 async function updateUser(req, res) {
   try {
-    const user = await userService.updateUser(req.params.id, req.body);
+    const user = await userService.updateUser(req.params.user_id, req.body);
     return res.status(200).json({
       message: "User updated successfully",
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+// a function to delete a user from the database
+async function deleteUser(req, res) {
+  try {
+    const user = await userService.deleteUser(req.params.user_id);
+    return res.status(200).json({
+      message: "User deleted successfully",
       success: true,
       data: user,
     });
@@ -158,4 +181,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   updateUser,
+  deleteUser,
 };

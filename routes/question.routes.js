@@ -16,18 +16,23 @@ router.get(
   questionController.getAllQuestions
 );
 router.get(
-  "/api/questions/:id",
+  "/api/questions/:question_id",
   verifyToken,
   authorizeRole("admin"),
   questionController.getQuestionById
 );
 router.put(
-  "/api/questions/:id",
+  "/api/questions/:question_id",
   verifyToken,
   authorizeRole("admin"),
   questionController.updateQuestion
 );
-// router.delete("/api/questions/:id", questionController.deleteQuestion);
+router.delete(
+  "/api/questions/:question_id",
+  verifyToken,
+  authorizeRole("admin"),
+  questionController.deleteQuestion
+);
 
 // export the router
 module.exports = router;

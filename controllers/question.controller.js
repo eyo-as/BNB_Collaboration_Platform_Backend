@@ -40,7 +40,11 @@ async function createQuestion(req, res) {
 async function getAllQuestions(req, res) {
   try {
     const questions = await questionService.getAllQuestions();
-    return res.status(200).json(questions);
+    return res.status(200).json({
+      message: "Questions retrieved successfully",
+      success: true,
+      data: questions,
+    });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -50,8 +54,18 @@ async function getAllQuestions(req, res) {
 // a function to get a single question from the database
 async function getQuestionById(req, res) {
   try {
-    const question = await questionService.getQuestionById(req.params.id);
-    return res.status(200).json(question);
+    const question = await questionService.getQuestionById(
+      req.params.question_id
+    );
+    // If the question is not found, return a 404 error
+    if (!question) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+    return res.status(200).json({
+      message: "Question retrieved successfully",
+      success: true,
+      data: question,
+    });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -63,7 +77,7 @@ async function updateQuestion(req, res) {
   try {
     const user_id = req.user?.user_id;
     const question = await questionService.updateQuestion(
-      req.params.id,
+      req.params.question_id,
       req.body,
       user_id
     );
@@ -78,20 +92,22 @@ async function updateQuestion(req, res) {
   }
 }
 
-// // a function to delete a question from the database
-// async function deleteQuestion(req, res) {
-//   try {
-//     const question = await questionService.deleteQuestion(req.params.id);
-//     return res.status(200).json({
-//       message: "Question deleted successfully",
-//       success: true,
-//       data: question,
-//     });
-//   } catch (error) {
-//     console.error(error.message);
-//     return res.status(500).json({ error: "Internal Server Error" });
-//   }
-// }
+// a function to delete a question from the database
+async function deleteQuestion(req, res) {
+  try {
+    const question = await questionService.deleteQuestion(
+      req.params.question_id
+    );
+    return res.status(200).json({
+      message: "Question deleted successfully",
+      success: true,
+      data: question,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 
 // export the functions
 module.exports = {
@@ -99,5 +115,5 @@ module.exports = {
   getAllQuestions,
   getQuestionById,
   updateQuestion,
-  //   deleteQuestion,
+  deleteQuestion,
 };
