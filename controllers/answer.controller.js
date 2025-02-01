@@ -1,13 +1,16 @@
 // import service file
 const answerService = require("../services/answer.service");
+const questionService = require("../services/question.service");
 
 // a function to create an answer
 const createAnswer = async (req, res) => {
   try {
     const user_id = req.user?.user_id;
-    const question_id = req.params.question_id;
+    const question_id = await questionService.getQuestionById(
+      req.params.question_id
+    );
 
-    if (!user_id || !question_id) {
+    if (!user_id || !question_id.question_id) {
       return res
         .status(403)
         .json({ message: "User ID or question ID missing" });
@@ -21,7 +24,7 @@ const createAnswer = async (req, res) => {
     const answer = await answerService.createAnswer(
       req.body,
       user_id,
-      question_id
+      question_id.question_id
     );
     return res.status(201).json({
       message: "Answer created successfully",
@@ -29,6 +32,7 @@ const createAnswer = async (req, res) => {
       data: answer,
     });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -54,7 +58,10 @@ const getAnswerById = async (req, res) => {
     if (!answer) {
       return res.status(404).json({ message: "Answer not found" });
     }
-    return res.status(200).json(answer);
+    return res.status(200).json({
+      message: "Answer retrived successfully!",
+      data: answer,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -63,17 +70,28 @@ const getAnswerById = async (req, res) => {
 // a function to update an answer
 const updateAnswer = async (req, res) => {
   try {
-    // validate request body
+    const answer_id = req.params.answer_id;
+    const answerExist = await answerService.getAnswerById(answer_id);
+
+    if (!answerExist) {
+      return res.status(404).json({
+        message: "Answer not found",
+        success: false,
+      });
+    }
+    const answer = await answerService.updateAnswer(answer_id, req.body);
+
     if (!req.body.answer_text) {
+      // validate request body
       return res.status(400).json({ message: "Answer is required" });
     }
 
-    // pass the data to the service
-    const answer = await answerService.updateAnswer(
-      req.params.answer_id,
-      req.body
-    );
-
+    if (answer.changedRows === 0) {
+      return res.status(400).json({
+        message: "Answer not changed",
+        success: false,
+      });
+    }
     return res.status(200).json({
       message: "Answer updated successfully",
       success: true,
@@ -87,11 +105,16 @@ const updateAnswer = async (req, res) => {
 // a function to delete an answer
 const deleteAnswer = async (req, res) => {
   try {
-    // pass the data to the service
-    const answer = await answerService.deleteAnswer(req.params.answer_id);
-    if (answer.affectedRows === 0) {
-      return res.status(404).json({ message: "Answer not found" });
+    const answer_id = req.params.answer_id;
+    const answerExist = await answerService.getAnswerById(answer_id);
+
+    if (!answerExist) {
+      return res.status(404).json({
+        message: "Answer not found",
+        success: false,
+      });
     }
+    const answer = await answerService.deleteAnswer(answer_id);
     return res.status(200).json({
       message: "Answer deleted successfully",
       success: true,
