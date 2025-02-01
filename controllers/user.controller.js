@@ -133,6 +133,12 @@ async function getAllUsers(req, res) {
 async function getUserById(req, res) {
   try {
     const user = await userService.getUserById(req.params.id);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
     return res.status(200).json({
       message: "User retrieved successfully",
       success: true,
@@ -147,7 +153,26 @@ async function getUserById(req, res) {
 // a function to update a user in the database
 async function updateUser(req, res) {
   try {
-    const user = await userService.updateUser(req.params.user_id, req.body);
+    const user = await userService.getUserById(req.params.id);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    await userService.updateUser(user.user_id, req.body);
+
+    const usernameExists = await userService.checkIfUserExists(
+      "username",
+      user.username
+    );
+    if (usernameExists) {
+      return res
+        .status(400)
+        .json({ error: "User with this username already exists." });
+    }
+
     return res.status(200).json({
       message: "User updated successfully",
       success: true,
@@ -162,7 +187,15 @@ async function updateUser(req, res) {
 // a function to delete a user from the database
 async function deleteUser(req, res) {
   try {
-    const user = await userService.deleteUser(req.params.user_id);
+    const user = await userService.getUserById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    await userService.deleteUser(user.user_id);
     return res.status(200).json({
       message: "User deleted successfully",
       success: true,

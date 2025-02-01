@@ -31,7 +31,7 @@ router.put(
 router.delete(
   "/api/user/:id",
   verifyToken,
-  authorizeRole("admin"),
+  authorizeRole("admin", "student"),
   userController.deleteUser
 );
 
