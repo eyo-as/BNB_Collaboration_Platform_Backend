@@ -78,10 +78,23 @@ async function updateQuestion(questionId, questionData, user_id) {
   }
 }
 
+// a function to delete a question
+async function deleteQuestion(question_id) {
+  try {
+    const query = `DELETE FROM Questions WHERE question_id = ?`;
+    const [rows] = await pool.execute(query, [question_id]);
+    return rows;
+  } catch (error) {
+    console.error("Error deleteing question:", error.message);
+    throw error;
+  }
+}
+
 // export the function
 module.exports = {
   createQuestion,
   getAllQuestions,
   getQuestionById,
   updateQuestion,
+  deleteQuestion,
 };

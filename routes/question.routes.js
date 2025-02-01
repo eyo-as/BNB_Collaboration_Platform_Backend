@@ -12,25 +12,25 @@ router.post("/api/question", verifyToken, questionController.createQuestion);
 router.get(
   "/api/questions",
   verifyToken,
-  authorizeRole("admin"),
+  authorizeRole("admin", "student", "teacher"),
   questionController.getAllQuestions
 );
 router.get(
   "/api/questions/:question_id",
   verifyToken,
-  authorizeRole("admin"),
+  authorizeRole("admin", "student", "teacher"),
   questionController.getQuestionById
 );
 router.put(
   "/api/questions/:question_id",
   verifyToken,
-  authorizeRole("admin"),
+  authorizeRole("student"),
   questionController.updateQuestion
 );
 router.delete(
   "/api/questions/:question_id",
   verifyToken,
-  authorizeRole("admin"),
+  authorizeRole("admin", "student", "teacher"),
   questionController.deleteQuestion
 );
 

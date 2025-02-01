@@ -76,11 +76,20 @@ async function getQuestionById(req, res) {
 async function updateQuestion(req, res) {
   try {
     const user_id = req.user?.user_id;
+
     const question = await questionService.updateQuestion(
       req.params.question_id,
       req.body,
       user_id
     );
+
+    // if there is no changed rows
+    if (question.changedRows === 0) {
+      return res.status(400).json({
+        message: "Question not changed",
+        success: false,
+      });
+    }
     return res.status(200).json({
       message: "Question updated successfully",
       success: true,
@@ -98,6 +107,12 @@ async function deleteQuestion(req, res) {
     const question = await questionService.deleteQuestion(
       req.params.question_id
     );
+    if (question.affectedRows === 0) {
+      return res.status(404).json({
+        message: "Question not found",
+        success: false,
+      });
+    }
     return res.status(200).json({
       message: "Question deleted successfully",
       success: true,
