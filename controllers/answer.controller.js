@@ -110,7 +110,7 @@ const deleteAnswer = async (req, res) => {
 
     if (!answerExist) {
       return res.status(404).json({
-        message: "Answer not found",
+        message: "Answer already deleted or not found",
         success: false,
       });
     }
