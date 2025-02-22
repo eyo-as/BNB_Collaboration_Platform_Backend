@@ -48,6 +48,18 @@ async function getAnswerById(answerId) {
   }
 }
 
+// a function to get answers by question id
+async function getAnswersByQuestionId(questionId) {
+  try {
+    const query = "SELECT * FROM Answers WHERE question_id = ?";
+    const [rows] = await pool.execute(query, [questionId]);
+    return rows;
+  } catch (error) {
+    console.error("Error getting answers:", error.message);
+    throw error;
+  }
+}
+
 // a function to update an answer from the database
 async function updateAnswer(answerId, answerData) {
   try {
@@ -79,6 +91,7 @@ module.exports = {
   createAnswer,
   getAllAnswers,
   getAnswerById,
+  getAnswersByQuestionId,
   updateAnswer,
   deleteAnswer,
 };

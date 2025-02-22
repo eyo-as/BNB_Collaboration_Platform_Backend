@@ -17,6 +17,12 @@ router.get(
   verifyToken,
   answerController.getAnswerById
 );
+// get answer for single questions by question id
+router.get(
+  "/api/questions/:question_id/answers",
+  verifyToken,
+  answerController.getAnswersByQuestionId
+);
 router.put(
   "/api/answers/:answer_id",
   verifyToken,

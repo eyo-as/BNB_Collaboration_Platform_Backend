@@ -67,6 +67,29 @@ const getAnswerById = async (req, res) => {
   }
 };
 
+// a function to get answer by question id
+const getAnswersByQuestionId = async (req, res) => {
+  try {
+    const question_id = req.params.question_id;
+    const questionExist = await questionService.getQuestionById(question_id);
+
+    if (!questionExist) {
+      return res.status(404).json({
+        message: "Question not found",
+        success: false,
+      });
+    }
+    const answers = await answerService.getAnswersByQuestionId(question_id);
+    return res.status(200).json({
+      message: "Answers retrieved successfully",
+      success: true,
+      data: answers,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // a function to update an answer
 const updateAnswer = async (req, res) => {
   try {
@@ -129,6 +152,7 @@ module.exports = {
   createAnswer,
   getAllAnswers,
   getAnswerById,
+  getAnswersByQuestionId,
   updateAnswer,
   deleteAnswer,
 };

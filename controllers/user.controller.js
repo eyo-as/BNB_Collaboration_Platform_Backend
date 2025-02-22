@@ -104,12 +104,12 @@ async function login(req, res) {
 
     // Respond with the generated token and user info
     return res.status(200).json({
-      message: "Login successful",
+      message: "Login successfull",
       success: true,
       token,
     });
   } catch (error) {
-    console.error(error.message);
+    // console.error(error.message);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
