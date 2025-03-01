@@ -16,12 +16,7 @@ router.get(
   authorizeRole("admin"),
   userController.getAllUsers
 );
-router.get(
-  "/api/user/:id",
-  verifyToken,
-  authorizeRole("admin"),
-  userController.getUserById
-);
+router.get("/api/user/:id", verifyToken, userController.getUserById);
 router.put(
   "/api/user/:id",
   verifyToken,
