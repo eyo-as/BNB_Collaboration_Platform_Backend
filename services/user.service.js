@@ -109,6 +109,20 @@ async function deleteUser(user_id) {
   return rows;
 }
 
+// a function to retrive user question from question table
+async function totalUserQuestion(user_id) {
+  const query = "SELECT * FROM questions WHERE user_id = ?";
+  const [rows] = await pool.execute(query, [user_id]);
+  return rows;
+}
+
+// a function to retrive user answer from question table
+async function totalUserAnswer(user_id) {
+  const query = "SELECT * FROM answers WHERE user_id = ?";
+  const [rows] = await pool.execute(query, [user_id]);
+  return rows;
+}
+
 // export the functions
 module.exports = {
   checkIfUserExists,
@@ -118,4 +132,6 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  totalUserQuestion,
+  totalUserAnswer,
 };

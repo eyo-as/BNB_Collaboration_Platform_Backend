@@ -29,6 +29,16 @@ router.delete(
   authorizeRole("admin", "student"),
   userController.deleteUser
 );
+router.get(
+  "/api/user/:user_id/questions",
+  verifyToken,
+  userController.getTotalUserQuestions
+);
+router.get(
+  "/api/user/:user_id/answers",
+  verifyToken,
+  userController.getTotalUserAnswers
+);
 
 // Export the router
 module.exports = router;

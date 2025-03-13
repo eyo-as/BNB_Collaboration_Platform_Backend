@@ -207,6 +207,61 @@ async function deleteUser(req, res) {
   }
 }
 
+// a function to get a user total question
+async function getTotalUserQuestions(req, res) {
+  try {
+    const user = await userService.getUserById(req.params.user_id);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    const user_id = user.user_id;
+    const totalUserQuestion = await userService.totalUserQuestion(user_id);
+
+    return res.status(200).json({
+      message: "user total question retrived successfully",
+      success: true,
+      data: totalUserQuestion,
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
+// a function to retrive user total answer
+async function getTotalUserAnswers(req, res) {
+  try {
+    const user = await userService.getUserById(req.params.user_id);
+    console.log(user);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    const user_id = user.user_id;
+    const totalUserAnswer = await userService.totalUserAnswer(user_id);
+
+    return res.status(200).json({
+      message: "user total question retrived successfully",
+      success: true,
+      data: totalUserAnswer,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
 // export the functions
 module.exports = {
   createUser,
@@ -215,4 +270,6 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  getTotalUserQuestions,
+  getTotalUserAnswers,
 };
