@@ -170,7 +170,7 @@ async function updateUser(req, res) {
     if (usernameExists) {
       return res
         .status(400)
-        .json({ error: "User with this username already exists." });
+        .json({ message: "User with this username already exists." });
     }
 
     return res.status(200).json({

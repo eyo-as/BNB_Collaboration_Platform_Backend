@@ -79,24 +79,12 @@ async function getUserById(id) {
 
 // a function to update a user from the database
 async function updateUser(user_id, userData) {
-  const { username, first_name, last_name, role, class_id, password } =
-    userData;
-
-  // hash the password
-  const hasedPassword = await bcrypt.hash(password, 10);
+  const { username, first_name, last_name, role, class_id } = userData;
 
   const query =
-    "UPDATE users SET username = ?, first_name = ?, last_name = ?, role = ?, class_id = ?, password = ? WHERE user_id = ?";
+    "UPDATE users SET username = ?, first_name = ?, last_name = ?, role = ?, class_id = ? WHERE user_id = ?";
 
-  const values = [
-    username,
-    first_name,
-    last_name,
-    role,
-    class_id,
-    hasedPassword,
-    user_id,
-  ];
+  const values = [username, first_name, last_name, role, class_id, user_id];
 
   const [rows] = await pool.execute(query, values);
   return rows;
