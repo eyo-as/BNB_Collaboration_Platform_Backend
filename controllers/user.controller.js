@@ -155,32 +155,48 @@ async function updateUser(req, res) {
   try {
     const user = await userService.getUserById(req.params.id);
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-        success: false,
-      });
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
     }
 
-    await userService.updateUser(user.user_id, req.body);
-
+    // Check username uniqueness (excluding current user)
     const usernameExists = await userService.checkIfUserExists(
       "username",
-      user.username
+      req.body.username,
+      user.user_id
     );
+
+    // Check email uniqueness (excluding current user)
+    const emailExists = await userService.checkIfUserExists(
+      "email",
+      req.body.email,
+      user.user_id
+    );
+
     if (usernameExists) {
       return res
         .status(400)
-        .json({ message: "User with this username already exists." });
+        .json({ message: "Username already taken", success: false });
     }
 
-    return res.status(200).json({
-      message: "User updated successfully",
-      success: true,
-      data: user,
-    });
+    if (emailExists) {
+      return res
+        .status(400)
+        .json({ message: "Email already taken", success: false });
+    }
+
+    // Proceed with update
+    await userService.updateUser(user.user_id, req.body);
+    return res.json({ success: true, message: "Profile updated" });
   } catch (error) {
-    console.error(error.message);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.error("Update error:", {
+      message: error.message,
+    });
+    return res.status(500).json({
+      message: "Internal Server Error",
+      details: "Please try again later",
+    });
   }
 }
 

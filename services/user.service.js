@@ -4,9 +4,20 @@ const pool = require("../config/db.config");
 const bcrypt = require("bcrypt");
 
 // a function to check if a user exists in the database
-async function checkIfUserExists(field, value) {
-  const query = `SELECT * FROM users WHERE ${field} = ?`;
-  const [rows] = await pool.execute(query, [value]);
+async function checkIfUserExists(field, value, excludeUserId = null) {
+  // Always initialize params with the value we're checking
+  const params = [value];
+
+  // Start with basic query
+  let query = `SELECT * FROM users WHERE ${field} = ?`;
+
+  // Conditionally add exclusion if needed
+  if (excludeUserId) {
+    query += " AND user_id != ?";
+    params.push(excludeUserId);
+  }
+
+  const [rows] = await pool.execute(query, params);
   return rows.length > 0;
 }
 
@@ -79,12 +90,12 @@ async function getUserById(id) {
 
 // a function to update a user from the database
 async function updateUser(user_id, userData) {
-  const { username, first_name, last_name, role, class_id } = userData;
+  const { username, first_name, last_name, email, class_id } = userData;
 
   const query =
-    "UPDATE users SET username = ?, first_name = ?, last_name = ?, role = ?, class_id = ? WHERE user_id = ?";
+    "UPDATE users SET username = ?, first_name = ?, last_name = ?, email = ?, class_id = ? WHERE user_id = ?";
 
-  const values = [username, first_name, last_name, role, class_id, user_id];
+  const values = [username, first_name, last_name, email, class_id, user_id];
 
   const [rows] = await pool.execute(query, values);
   return rows;
