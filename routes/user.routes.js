@@ -13,20 +13,20 @@ router.post("/api/login", userController.login);
 router.get(
   "/api/users",
   verifyToken,
-  authorizeRole("admin", "student"),
+  authorizeRole("admin", "teacher"),
   userController.getAllUsers
 );
 router.get("/api/user/:id", verifyToken, userController.getUserById);
 router.put(
   "/api/user/:id",
   verifyToken,
-  authorizeRole("student"),
+  authorizeRole("student", "teacher", "admin"),
   userController.updateUser
 );
 router.delete(
   "/api/user/:id",
   verifyToken,
-  authorizeRole("admin", "student"),
+  authorizeRole("admin", "teacher"),
   userController.deleteUser
 );
 router.get(
