@@ -76,7 +76,7 @@ async function login(email, password) {
 
 // a function to get all users
 async function getAllUsers() {
-  const query = "SELECT * FROM users";
+  const query = "SELECT * FROM users ORDER BY user_id DESC";
   const [rows] = await pool.execute(query);
   return rows;
 }

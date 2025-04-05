@@ -32,7 +32,9 @@ async function createQuestion(questionData) {
 // a function to get all questions from the database
 async function getAllQuestions() {
   try {
-    const [questions] = await pool.execute("SELECT * FROM Questions");
+    const [questions] = await pool.execute(
+      "SELECT * FROM Questions ORDER BY created_at DESC"
+    );
     return questions;
   } catch (error) {
     console.error("Error getting questions:", error.message);
