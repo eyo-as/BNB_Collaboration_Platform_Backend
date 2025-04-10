@@ -13,7 +13,7 @@ router.post("/api/login", userController.login);
 router.get(
   "/api/users",
   verifyToken,
-  authorizeRole("admin", "teacher"),
+  authorizeRole("admin", "student", "teacher"),
   userController.getAllUsers
 );
 router.get("/api/user/:id", verifyToken, userController.getUserById);
