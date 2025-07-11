@@ -18,6 +18,10 @@ const corsOptions = {
   origin: process.env.FRONTEND_URL,
   optionsSuccessStatus: 200,
 };
+// sample get request
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 // add the cors middleware
 app.use(cors(corsOptions));
 // add the express.json middleware
