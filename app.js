@@ -9,7 +9,7 @@ require("dotenv").config();
 // import the routes
 const routes = require("./routes");
 // get the port from the environment variable
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3306;
 
 // create the express application
 const app = express();
