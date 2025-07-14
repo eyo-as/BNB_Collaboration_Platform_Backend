@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3306;
 const app = express();
 // Set up the CORS options to allow requests from our front-end
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
   optionsSuccessStatus: 200,
 };
 // sample get request
