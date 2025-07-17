@@ -9,13 +9,13 @@ require("dotenv").config();
 // import the routes
 const routes = require("./routes");
 // get the port from the environment variable
-const PORT = process.env.PORT || 3306;
+const PORT = process.env.DB_PORT;
 
 // create the express application
 const app = express();
 // Set up the CORS options to allow requests from our front-end
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: process.env.FRONTEND_URL,
   optionsSuccessStatus: 200,
 };
 // sample get request
