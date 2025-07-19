@@ -30,14 +30,6 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
-app.get("/debug", (req, res) => {
-  res.json({
-    DB_HOST: process.env.DB_HOST,
-    DB_NAME: process.env.DB_NAME,
-    DB_USER: process.env.DB_USER,
-  });
-});
-
 // add the routes to the middleware chain
 app.use("/", routes);
 // start the server
