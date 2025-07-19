@@ -19,14 +19,17 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 200,
 };
+// add the cors middleware
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // handle preflight requests
+
+// add the express.json middleware
+app.use(express.json());
+
 // sample get request
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
-// add the cors middleware
-app.use(cors(corsOptions));
-// add the express.json middleware
-app.use(express.json());
 
 // add the routes to the middleware chain
 app.use("/", routes);
