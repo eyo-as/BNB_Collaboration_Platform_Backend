@@ -109,7 +109,7 @@ async function login(req, res) {
       token,
     });
   } catch (error) {
-    // console.error(error.message);
+    console.error(error.message);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
