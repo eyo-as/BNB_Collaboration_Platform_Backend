@@ -8,7 +8,7 @@ async function createQuestion(questionData) {
 
     // Query to insert a new question
     const query = `
-    INSERT INTO Questions (user_id, class_id, title, description, tags)
+    INSERT INTO questions (user_id, class_id, title, description, tags)
     VALUES (?, ?, ?, ?, ?)
   `;
 
@@ -33,7 +33,7 @@ async function createQuestion(questionData) {
 async function getAllQuestions() {
   try {
     const [questions] = await pool.execute(
-      "SELECT * FROM Questions ORDER BY created_at DESC"
+      "SELECT * FROM questions ORDER BY created_at DESC"
     );
     return questions;
   } catch (error) {
@@ -45,7 +45,7 @@ async function getAllQuestions() {
 // a function to get a single question
 async function getQuestionById(questionId) {
   try {
-    const query = "SELECT * FROM Questions WHERE question_id = ?";
+    const query = "SELECT * FROM questions WHERE question_id = ?";
     const [rows] = await pool.execute(query, [questionId]);
     return rows[0];
   } catch (error) {
@@ -60,7 +60,7 @@ async function updateQuestion(questionId, questionData, user_id) {
     const { class_id, title, description, tags } = questionData;
 
     const query = `
-      UPDATE Questions
+      UPDATE questions
       SET user_id = ?, class_id = ?, title = ?, description = ?, tags = ?
       WHERE question_id = ?
     `;
@@ -83,7 +83,7 @@ async function updateQuestion(questionId, questionData, user_id) {
 // a function to delete a question
 async function deleteQuestion(question_id) {
   try {
-    const query = `DELETE FROM Questions WHERE question_id = ?`;
+    const query = `DELETE FROM questions WHERE question_id = ?`;
     const [rows] = await pool.execute(query, [question_id]);
     return rows;
   } catch (error) {

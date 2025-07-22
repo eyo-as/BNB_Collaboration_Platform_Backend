@@ -8,7 +8,7 @@ async function createAnswer(answerData, user_id, question_id) {
 
     // Query to insert a new answer
     const query = `
-        INSERT INTO Answers (user_id, question_id, answer_text)
+        INSERT INTO answers (user_id, question_id, answer_text)
         VALUES (?, ?, ?)
         `;
 
@@ -28,7 +28,7 @@ async function createAnswer(answerData, user_id, question_id) {
 // a function to get all answers from the database
 async function getAllAnswers() {
   try {
-    const [answers] = await pool.execute("SELECT * FROM Answers");
+    const [answers] = await pool.execute("SELECT * FROM answers");
     return answers;
   } catch (error) {
     console.error("Error getting answers:", error.message);
@@ -39,7 +39,7 @@ async function getAllAnswers() {
 // a functoion to get a single answer from the database
 async function getAnswerById(answerId) {
   try {
-    const query = "SELECT * FROM Answers WHERE answer_id = ?";
+    const query = "SELECT * FROM answers WHERE answer_id = ?";
     const [rows] = await pool.execute(query, [answerId]);
     return rows[0];
   } catch (error) {
@@ -51,7 +51,7 @@ async function getAnswerById(answerId) {
 // a function to get answers by question id
 async function getAnswersByQuestionId(questionId) {
   try {
-    const query = "SELECT * FROM Answers WHERE question_id = ?";
+    const query = "SELECT * FROM answers WHERE question_id = ?";
     const [rows] = await pool.execute(query, [questionId]);
     return rows;
   } catch (error) {
@@ -64,7 +64,7 @@ async function getAnswersByQuestionId(questionId) {
 async function updateAnswer(answerId, answerData) {
   try {
     const { answer_text } = answerData;
-    const query = "UPDATE Answers SET answer_text = ? WHERE answer_id = ?";
+    const query = "UPDATE answers SET answer_text = ? WHERE answer_id = ?";
     const values = [answer_text, answerId];
     const [result] = await pool.execute(query, values);
     return result;
@@ -77,7 +77,7 @@ async function updateAnswer(answerId, answerData) {
 // a function to delete an answer from the database
 async function deleteAnswer(answerId) {
   try {
-    const query = "DELETE FROM Answers WHERE answer_id = ?";
+    const query = "DELETE FROM answers WHERE answer_id = ?";
     const [result] = await pool.execute(query, [answerId]);
     return result;
   } catch (error) {
