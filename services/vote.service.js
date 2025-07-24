@@ -16,7 +16,7 @@ async function createVote(voteData) {
   // Check if the question_id exists
   if (safeQuestionId) {
     const [questionCheck] = await pool.execute(
-      "SELECT question_id FROM Questions WHERE question_id = ?",
+      "SELECT question_id FROM questions WHERE question_id = ?",
       [safeQuestionId]
     );
     if (questionCheck.length === 0) {
@@ -27,7 +27,7 @@ async function createVote(voteData) {
   // Check if the answer_id exists
   if (safeAnswerId) {
     const [answerCheck] = await pool.execute(
-      "SELECT answer_id FROM Answers WHERE answer_id = ?",
+      "SELECT answer_id FROM answers WHERE answer_id = ?",
       [safeAnswerId]
     );
     if (answerCheck.length === 0) {
@@ -37,7 +37,7 @@ async function createVote(voteData) {
 
   // Check if the user has already voted
   const [existingVote] = await pool.execute(
-    "SELECT vote_type FROM Votes WHERE user_id = ? AND (question_id <=> ? OR answer_id <=> ?)",
+    "SELECT vote_type FROM votes WHERE user_id = ? AND (question_id <=> ? OR answer_id <=> ?)",
     [user_id, safeQuestionId, safeAnswerId]
   );
 
@@ -47,18 +47,18 @@ async function createVote(voteData) {
     if (currentVoteType === vote_type) {
       // If the same vote is clicked again, remove it
       await pool.execute(
-        "DELETE FROM Votes WHERE user_id = ? AND (question_id <=> ? OR answer_id <=> ?)",
+        "DELETE FROM votes WHERE user_id = ? AND (question_id <=> ? OR answer_id <=> ?)",
         [user_id, safeQuestionId, safeAnswerId]
       );
 
       // Correctly decrement the vote count only if it was previously increased
       const decrementQuery = safeQuestionId
-        ? `UPDATE Questions SET ${
+        ? `UPDATE questions SET ${
             vote_type === "upvote"
               ? "upvotes = GREATEST(upvotes - 1, 0)"
               : "downvotes = GREATEST(downvotes - 1, 0)"
           } WHERE question_id = ?`
-        : `UPDATE Answers SET ${
+        : `UPDATE answers SET ${
             vote_type === "upvote"
               ? "upvotes = GREATEST(upvotes - 1, 0)"
               : "downvotes = GREATEST(downvotes - 1, 0)"
@@ -70,18 +70,18 @@ async function createVote(voteData) {
     } else {
       // Change vote type from upvote to downvote or vice versa
       await pool.execute(
-        "UPDATE Votes SET vote_type = ? WHERE user_id = ? AND (question_id <=> ? OR answer_id <=> ?)",
+        "UPDATE votes SET vote_type = ? WHERE user_id = ? AND (question_id <=> ? OR answer_id <=> ?)",
         [vote_type, user_id, safeQuestionId, safeAnswerId]
       );
 
       // Adjust vote counts correctly
       const decrementOldVote = safeQuestionId
-        ? `UPDATE Questions SET ${
+        ? `UPDATE questions SET ${
             currentVoteType === "upvote"
               ? "upvotes = GREATEST(upvotes - 1, 0)"
               : "downvotes = GREATEST(downvotes - 1, 0)"
           } WHERE question_id = ?`
-        : `UPDATE Answers SET ${
+        : `UPDATE answers SET ${
             currentVoteType === "upvote"
               ? "upvotes = GREATEST(upvotes - 1, 0)"
               : "downvotes = GREATEST(downvotes - 1, 0)"
@@ -90,12 +90,12 @@ async function createVote(voteData) {
       await pool.execute(decrementOldVote, [safeQuestionId || safeAnswerId]);
 
       const incrementNewVote = safeQuestionId
-        ? `UPDATE Questions SET ${
+        ? `UPDATE questions SET ${
             vote_type === "upvote"
               ? "upvotes = upvotes + 1"
               : "downvotes = downvotes + 1"
           } WHERE question_id = ?`
-        : `UPDATE Answers SET ${
+        : `UPDATE answers SET ${
             vote_type === "upvote"
               ? "upvotes = upvotes + 1"
               : "downvotes = downvotes + 1"
@@ -109,18 +109,18 @@ async function createVote(voteData) {
 
   // Insert new vote
   await pool.execute(
-    "INSERT INTO Votes (user_id, question_id, answer_id, vote_type) VALUES (?, ?, ?, ?)",
+    "INSERT INTO votes (user_id, question_id, answer_id, vote_type) VALUES (?, ?, ?, ?)",
     [user_id, safeQuestionId, safeAnswerId, vote_type]
   );
 
   // Increase vote count
   const incrementQuery = safeQuestionId
-    ? `UPDATE Questions SET ${
+    ? `UPDATE questions SET ${
         vote_type === "upvote"
           ? "upvotes = upvotes + 1"
           : "downvotes = downvotes + 1"
       } WHERE question_id = ?`
-    : `UPDATE Answers SET ${
+    : `UPDATE answers SET ${
         vote_type === "upvote"
           ? "upvotes = upvotes + 1"
           : "downvotes = downvotes + 1"
@@ -134,7 +134,7 @@ async function createVote(voteData) {
 // Get a vote by user_id and question_id/answer_id
 async function getVote(user_id, question_id, answer_id) {
   const query = `
-    SELECT * FROM Votes
+    SELECT * FROM votes
     WHERE user_id = ? AND (question_id = ? OR answer_id = ?)
   `;
   const [rows] = await pool.execute(query, [user_id, question_id, answer_id]);
@@ -144,14 +144,14 @@ async function getVote(user_id, question_id, answer_id) {
 // Get total votes for a question
 async function getQuestionVotes(question_id) {
   const query =
-    "SELECT upvotes, downvotes FROM Questions WHERE question_id = ?";
+    "SELECT upvotes, downvotes FROM questions WHERE question_id = ?";
   const [rows] = await pool.execute(query, [question_id]);
   return rows[0];
 }
 
 // Get total votes for an answer
 async function getAnswerVotes(answer_id) {
-  const query = "SELECT upvotes, downvotes FROM Answers WHERE answer_id = ?";
+  const query = "SELECT upvotes, downvotes FROM answers WHERE answer_id = ?";
   const [rows] = await pool.execute(query, [answer_id]);
   return rows[0];
 }
@@ -159,7 +159,7 @@ async function getAnswerVotes(answer_id) {
 // Delete a vote
 async function deleteVote(vote_id) {
   // Get the vote details before deleting
-  const query = "SELECT * FROM Votes WHERE vote_id = ?";
+  const query = "SELECT * FROM votes WHERE vote_id = ?";
   const [rows] = await pool.execute(query, [vote_id]);
   const vote = rows[0];
 
@@ -168,13 +168,13 @@ async function deleteVote(vote_id) {
   }
 
   // Delete the vote
-  const deleteQuery = "DELETE FROM Votes WHERE vote_id = ?";
+  const deleteQuery = "DELETE FROM votes WHERE vote_id = ?";
   await pool.execute(deleteQuery, [vote_id]);
 
   // Update the vote count in the Questions or Answers table
   if (vote.question_id) {
     const updateQuery = `
-      UPDATE Questions
+      UPDATE questions
       SET ${
         vote.vote_type === "upvote"
           ? "upvotes = upvotes - 1"
@@ -185,7 +185,7 @@ async function deleteVote(vote_id) {
     await pool.execute(updateQuery, [vote.question_id]);
   } else if (vote.answer_id) {
     const updateQuery = `
-      UPDATE Answers
+      UPDATE answers
       SET ${
         vote.vote_type === "upvote"
           ? "upvotes = upvotes - 1"
