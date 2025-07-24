@@ -254,7 +254,6 @@ async function getTotalUserQuestions(req, res) {
 async function getTotalUserAnswers(req, res) {
   try {
     const user = await userService.getUserById(req.params.user_id);
-    console.log(user);
     if (!user) {
       return res.status(404).json({
         message: "User not found",
